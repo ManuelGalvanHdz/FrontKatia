@@ -1,4 +1,5 @@
-package com.ismael.kiduaventumundo.kiduaventumundo.back.db
+
+/*package com.ismael.kiduaventumundo.kiduaventumundo.back.db
 
 import android.content.ContentValues
 import android.content.Context
@@ -179,3 +180,4 @@ class AppDatabaseHelper(context: Context) :
         private const val COL_SESSION_USER_ID = "user_id"
     }
 }
+*/

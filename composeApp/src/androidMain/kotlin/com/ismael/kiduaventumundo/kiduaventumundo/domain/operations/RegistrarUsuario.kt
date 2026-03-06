@@ -1,4 +1,4 @@
-package com.ismael.kiduaventumundo.kiduaventumundo.domain.operations
+/*package com.ismael.kiduaventumundo.kiduaventumundo.domain.operations
 
 import com.ismael.kiduaventumundo.kiduaventumundo.com.ismael.kiduaventumundo.kiduaventumundo.domain.model.User
 import com.ismael.kiduaventumundo.kiduaventumundo.domain.repository.userRepository
@@ -33,3 +33,5 @@ class RegistrarUsuario(
         }
     }
 }
+
+ */

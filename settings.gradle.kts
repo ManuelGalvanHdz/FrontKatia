@@ -12,6 +12,9 @@ pluginManagement {
         }
         mavenCentral()
         gradlePluginPortal()
+
+        //  AGREGAR ESTE
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 
@@ -25,6 +28,9 @@ dependencyResolutionManagement {
             }
         }
         mavenCentral()
+
+        //  AGREGAR ESTE
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }
 }
 

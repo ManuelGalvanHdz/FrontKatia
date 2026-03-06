@@ -1,21 +1,15 @@
 package com.ismael.kiduaventumundo.kiduaventumundo.domain.repository
 
-import com.ismael.kiduaventumundo.kiduaventumundo.com.ismael.kiduaventumundo.kiduaventumundo.domain.model.User
+import com.ismael.kiduaventumundo.kiduaventumundo.domain.model.User
 
-interface userRepository {
-    fun register(user: User): Long
+interface UserRepository {
 
-    fun getUserById(id: Long): User?
+    suspend fun createUser(user: User)
 
-    fun getUserByNickname(nickname: String): User?
+    suspend fun getUserByNickname(nickname: String): User?
 
-    fun nicknameExists(nickname: String): Boolean
-
-    fun updateUser(user: User)
-
-    fun setSession(userId: Long)
-
-    fun getSessionUserId(): Long?
-
-    fun clearSession()
+    suspend fun login(
+        nickname: String,
+        password: String
+    ): Boolean
 }

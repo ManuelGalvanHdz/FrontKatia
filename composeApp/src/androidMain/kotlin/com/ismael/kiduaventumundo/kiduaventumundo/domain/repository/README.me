@@ -1,0 +1,35 @@
+# Repository Interface (Domain)
+
+## Descripción
+
+El Repository define un **contrato de acceso a datos** para la aplicación.
+
+Esta capa pertenece al **dominio** y no depende de la implementación concreta de los datos.
+
+Permite desacoplar la lógica de negocio de:
+
+* APIs
+* Bases de datos
+* Archivos
+* Servicios externos
+
+## Responsabilidades
+
+* Definir operaciones disponibles sobre los datos
+* Servir como punto de acceso único para la capa de dominio
+
+## Ejemplo
+
+```kotlin
+interface UserRepository {
+
+    suspend fun createUser(user: User)
+
+}
+```
+
+## Ventajas
+
+* Permite cambiar la fuente de datos sin modificar la lógica de negocio
+* Facilita pruebas con mocks
+* Mejora la arquitectura limpia

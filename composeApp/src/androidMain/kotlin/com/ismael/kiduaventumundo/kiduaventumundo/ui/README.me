@@ -1,0 +1,38 @@
+# ViewModel
+
+## Descripción
+
+El ViewModel forma parte de la arquitectura **MVVM (Model–View–ViewModel)** y actúa como intermediario entre la interfaz de usuario (UI) y la lógica de negocio de la aplicación.
+
+Su función principal es:
+
+* Gestionar el **estado de la interfaz**
+* Ejecutar operaciones asincrónicas
+* Comunicar la UI con el repositorio
+
+## Responsabilidades
+
+* Mantener el estado de la pantalla mediante `UiState`
+* Ejecutar llamadas a repositorios usando **coroutines**
+* Manejar errores de la aplicación
+* Notificar a la UI cuando una operación fue exitosa
+
+## Ejemplo en el proyecto
+
+`RegisterViewModel` se encarga de registrar un usuario.
+
+Flujo:
+
+UI → ViewModel → Repository
+
+## Tecnologías utilizadas
+
+* Kotlin
+* Android ViewModel
+
+
+## Beneficios
+
+* Separación clara entre UI y lógica
+* Facilita pruebas unitarias
+* Evita que la UI maneje lógica de negocio

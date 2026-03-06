@@ -1,0 +1,139 @@
+# API Layer
+
+## Descripción
+
+La capa de API se encarga de gestionar la comunicación entre la aplicación Android y el servidor backend.
+
+Utiliza **HTTP requests** para enviar y recibir información.
+
+En este proyecto se utiliza **Ktor Client**.
+
+## Responsabilidades
+
+* Enviar solicitudes HTTP al backend
+* Serializar objetos a JSON
+* Recibir respuestas del servidor
+
+## Componentes principales
+
+### ApiClient
+
+Configura el cliente HTTP.
+
+```kotlin
+HttpClient(OkHttp) {
+    install(ContentNegotiation) {
+        json()
+    }
+}
+```
+
+### UserApi
+
+Define los endpoints relacionados con usuarios.
+
+```kotlin
+suspend fun createUser(user: User)
+```
+
+## Flujo
+
+ViewModel → RepositoryImpl → API → Backend
+
+
+
+
+# User API
+
+## Descripción
+
+La clase `UserApi` define las operaciones HTTP relacionadas con los usuarios.
+
+Esta clase actúa como cliente para comunicarse con el backend.
+
+## Endpoint utilizado
+
+POST /users
+
+Este endpoint permite registrar nuevos usuarios en el sistema.
+
+## Ejemplo de implementación
+
+```kotlin
+suspend fun createUser(user: User) {
+
+    ApiClient.client.post("http://10.0.2.2:8080/users") {
+
+        contentType(ContentType.Application.Json)
+
+        setBody(user)
+    }
+}
+```
+
+
+# API Client
+
+## Descripción
+
+`ApiClient` es el componente encargado de **configurar y proporcionar el cliente HTTP** utilizado por la aplicación para comunicarse con el backend.
+
+Centraliza la configuración de red para que todas las solicitudes HTTP utilicen el mismo cliente.
+
+En este proyecto se utiliza **Ktor Client con el motor OkHttp**.
+
+---
+
+## Responsabilidades
+
+* Crear y configurar el cliente HTTP
+* Configurar la serialización JSON
+* Manejar comunicación con el backend
+* Ser reutilizado por todas las clases API
+
+---
+
+## Implementación
+
+El `ApiClient` define un `HttpClient` configurado con el plugin **ContentNegotiation** para manejar JSON automáticamente.
+
+```kotlin
+object ApiClient {
+
+    val client = HttpClient(OkHttp) {
+
+        install(ContentNegotiation) {
+
+            json(
+                Json {
+                    ignoreUnknownKeys = true
+                    isLenient = true
+                    prettyPrint = true
+                }
+            )
+        }
+    }
+}
+```
+
+---
+
+## Configuración utilizada
+
+### Motor HTTP
+
+Se utiliza **OkHttp** como motor de red.
+
+Ventajas:
+
+* Alto rendimiento
+* Compatible con Android
+* Manejo eficiente de conexiones
+
+---
+
+### Serialización JSON
+
+Se usa **kotlinx.serialization** para convertir automáticamente:
+
+* Objetos Kotlin → JSON

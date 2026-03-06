@@ -1,0 +1,35 @@
+# Repository Implementation (DataSOURCE)
+
+## Descripción
+
+`RepositoryImpl` es la implementación concreta del repositorio definido en la capa de dominio.
+
+Esta clase se encarga de:
+
+* Conectar con APIs
+* Obtener o enviar datos
+* Transformar datos si es necesario
+
+## Responsabilidades
+
+* Implementar los métodos definidos en el Repository
+* Comunicarse con la capa de API
+* Manejar la fuente de datos remota
+
+## Ejemplo
+
+```kotlin
+class UserRepositoryImpl : UserRepository {
+
+    private val api = UserApi()
+
+    override suspend fun createUser(user: User) {
+        api.createUser(user)
+    }
+}
+```
+
+## Beneficios
+
+* Separa la lógica de negocio de la infraestructura
+* Permite cambiar API o base de datos sin afectar la UI

@@ -1,0 +1,45 @@
+# Arquitectura del Proyecto
+
+El proyecto sigue una arquitectura basada en **MVVM con separación de capas**.
+
+## Capas principales
+
+### UI
+
+Pantallas construidas con **Jetpack Compose**.
+
+### ViewModel
+
+Gestiona el estado de la interfaz y coordina las operaciones.
+
+### Repository
+
+Define el acceso a datos mediante interfaces.
+
+### RepositoryImpl
+
+Implementa la comunicación con la API.
+
+### API
+
+Gestiona solicitudes HTTP al backend.
+
+### Backend
+
+Servidor construido con **Ktor** que procesa las solicitudes y guarda información en la base de datos.
+
+## Flujo de registro de usuario
+
+RegisterScreen
+↓
+RegisterViewModel
+↓
+UserRepository
+↓
+UserRepositoryImpl
+↓
+UserApi
+↓
+Ktor API
+↓
+Base de datos

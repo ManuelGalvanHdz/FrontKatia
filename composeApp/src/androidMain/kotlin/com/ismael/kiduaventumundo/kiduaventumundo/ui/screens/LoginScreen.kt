@@ -1,36 +1,36 @@
+
 package com.ismael.kiduaventumundo.kiduaventumundo.ui.screens
 
-// ================= ANDROID SDK =================
 import android.os.Build
-
-// ================= COMPOSE - FOUNDATION =================
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-
-// ================= COMPOSE - MATERIAL =================
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Visibility
+import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.*
-
-// ================= COMPOSE - RUNTIME =================
 import androidx.compose.runtime.*
-
-// ================= COMPOSE - UI CORE =================
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
-// ================= LIBRERÍAS EXTERNAS =================
 import coil.ImageLoader
 import coil.compose.AsyncImage
 import coil.decode.GifDecoder
 import coil.decode.ImageDecoderDecoder
 
-// ================= PROYECTO =================
+import androidx.lifecycle.viewmodel.compose.viewModel
+
 import com.ismael.kiduaventumundo.kiduaventumundo.R
-import com.ismael.kiduaventumundo.kiduaventumundo.back.db.AppDatabaseHelper
+import com.ismael.kiduaventumundo.kiduaventumundo.ui.viewmodel.LoginViewModel
+
 
 @Composable
 fun LoginScreen(
@@ -39,11 +39,12 @@ fun LoginScreen(
 ) {
 
     val context = LocalContext.current
-    val db = remember { AppDatabaseHelper(context) }
+    val viewModel: LoginViewModel = viewModel()
 
     var nickname by remember { mutableStateOf("") }
-    var error by remember { mutableStateOf<String?>(null) }
-    var isLoading by remember { mutableStateOf(false) }
+    var password by remember { mutableStateOf("") }
+
+    var passwordVisible by remember { mutableStateOf(false) }
 
     val imageLoader = ImageLoader.Builder(context)
         .components {
@@ -55,9 +56,20 @@ fun LoginScreen(
         }
         .build()
 
-    Box(modifier = Modifier.fillMaxSize()) {
 
-        //  Fondo
+    // Navegación cuando el login sea exitoso
+    LaunchedEffect(viewModel.loginSuccess) {
+        if (viewModel.loginSuccess) {
+            onLoginSuccess()
+        }
+    }
+
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+
+        // Fondo
         AsyncImage(
             model = R.drawable.fondo_registro,
             contentDescription = null,
@@ -65,7 +77,8 @@ fun LoginScreen(
             contentScale = ContentScale.Crop
         )
 
-        //  Búho animado
+
+        // Búho animado
         AsyncImage(
             model = R.drawable.hello,
             imageLoader = imageLoader,
@@ -76,13 +89,15 @@ fun LoginScreen(
                 .padding(top = 50.dp)
         )
 
-        //  Card
+
+        // Card Login
         Card(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 24.dp)
                 .align(Alignment.Center)
                 .offset(y = 70.dp),
+
             shape = RoundedCornerShape(32.dp),
             elevation = CardDefaults.cardElevation(defaultElevation = 16.dp)
         ) {
@@ -90,18 +105,21 @@ fun LoginScreen(
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(24.dp),
+                    .padding(26.dp),
+
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 Text(
                     text = "Iniciar Sesión",
-                    fontSize = 24.sp,
+                    fontSize = 26.sp,
                     fontWeight = FontWeight.Bold
                 )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
+
+                // Campo nickname
                 OutlinedTextField(
                     value = nickname,
                     onValueChange = { nickname = it },
@@ -110,58 +128,114 @@ fun LoginScreen(
                     singleLine = true
                 )
 
-                if (error != null) {
-                    Spacer(modifier = Modifier.height(10.dp))
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                // Campo contraseña
+                OutlinedTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = { Text("Contraseña") },
+                    modifier = Modifier.fillMaxWidth(),
+                    singleLine = true,
+
+                    visualTransformation =
+                        if (passwordVisible) VisualTransformation.None
+                        else PasswordVisualTransformation(),
+
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password
+                    ),
+
+                    trailingIcon = {
+
+                        val icon =
+                            if (passwordVisible)
+                                Icons.Filled.VisibilityOff
+                            else
+                                Icons.Filled.Visibility
+
+                        IconButton(
+                            onClick = {
+                                passwordVisible = !passwordVisible
+                            }
+                        ) {
+                            Icon(
+                                imageVector = icon,
+                                contentDescription = "Mostrar contraseña"
+                            )
+                        }
+                    }
+                )
+
+
+                Spacer(modifier = Modifier.height(10.dp))
+
+
+                // Mostrar error
+                viewModel.errorMessage?.let {
+
                     Text(
-                        text = error!!,
+                        text = it,
                         color = MaterialTheme.colorScheme.error
                     )
+
+                    Spacer(modifier = Modifier.height(10.dp))
                 }
 
-                Spacer(modifier = Modifier.height(24.dp))
 
+                Spacer(modifier = Modifier.height(16.dp))
+
+
+                // Botón login
                 Button(
                     onClick = {
-                        error = null
-                        val nick = nickname.trim()
-
-                        if (nick.isBlank()) {
-                            error = "Ingresa tu nickname."
-                            return@Button
-                        }
-
-                        isLoading = true
-                        val userId = db.getUserIdByNickname(nick)
-
-                        if (userId == null) {
-                            error = "Usuario no encontrado."
-                            isLoading = false
-                            return@Button
-                        }
-
-                        db.setSession(userId)
-                        isLoading = false
-                        onLoginSuccess()
+                        viewModel.login(nickname, password)
                     },
+
+                    enabled = !viewModel.isLoading,
+
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(55.dp),
-                    shape = RoundedCornerShape(20.dp),
-                    enabled = !isLoading
+
+                    shape = RoundedCornerShape(20.dp)
                 ) {
-                    Text(if (isLoading) "Entrando..." else "Entrar")
+
+                    if (viewModel.isLoading) {
+
+                        CircularProgressIndicator(
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            strokeWidth = 3.dp,
+                            modifier = Modifier.size(22.dp)
+                        )
+
+                    } else {
+
+                        Text("Entrar")
+
+                    }
                 }
+
 
                 Spacer(modifier = Modifier.height(12.dp))
 
-                //  MENSAJE
+
+                // Ir a registro
                 TextButton(
-                    onClick = onGoRegister,
-                    enabled = !isLoading
+                    onClick = onGoRegister
                 ) {
+
                     Text("¿No tienes cuenta? Regístrate")
+
                 }
+
             }
+
         }
+
     }
+
 }
+

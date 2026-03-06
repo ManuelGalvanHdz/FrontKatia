@@ -1,35 +1,68 @@
 package com.ismael.kiduaventumundo.kiduaventumundo.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
-//import com.ismael.kiduaventumundo.domain.repository.UserRepository
-import com.ismael.kiduaventumundo.kiduaventumundo.domain.repository.userRepository
+import androidx.lifecycle.viewModelScope
+import com.ismael.kiduaventumundo.datasource.repository.UserRepositoryImpl
 
-
+import kotlinx.coroutines.launch
+import androidx.compose.runtime.*
+import com.ismael.kiduaventumundo.kiduaventumundo.datasource.session.SessionManager
 
 class LoginViewModel(
-    private val repository: userRepository
+    private val repository: UserRepositoryImpl = UserRepositoryImpl()
 ) : ViewModel() {
 
-    fun login(nickname: String): LoginResult {
+    // =============================
+    // STATES
+    // =============================
 
-        val nick = nickname.trim()
+    var isLoading by mutableStateOf(false)
+        private set
 
-        if (nick.isBlank()) {
-            return LoginResult.Error("Ingresa tu nickname.")
+    var errorMessage by mutableStateOf<String?>(null)
+        private set
+
+    var loginSuccess by mutableStateOf(false)
+        private set
+
+
+    // =============================
+    // LOGIN
+    // =============================
+    fun login(
+        nickname: String,
+        password: String
+    ) {
+
+        if (nickname.isBlank() || password.isBlank()) {
+            errorMessage = "Completa todos los campos"
+            return
         }
 
-        val user = repository.getUserByNickname(nick)
+        viewModelScope.launch {
 
-        if (user == null) {
-            return LoginResult.Error("Usuario no encontrado. Crea una cuenta.")
+            isLoading = true
+            errorMessage = null
+
+            val success = repository.login(
+                nickname,
+                password
+            )
+
+            if (success) {
+
+                // Guardar sesión
+                SessionManager.saveToken(nickname)
+
+                loginSuccess = true
+
+            } else {
+
+                errorMessage = "Usuario o contraseña incorrectos"
+
+            }
+
+            isLoading = false
         }
-
-        repository.setSession(user.id)
-        return LoginResult.Success
     }
-}
-
-sealed class LoginResult {
-    object Success : LoginResult()
-    data class Error(val message: String) : LoginResult()
 }
